@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}场景管理 - HTTP Mock Server{% endblock %}
+{% block page_title %}场景管理{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <p class="text-muted mb-0">同一时刻仅一个场景生效。切换后新场景规则立即参与匹配。全局规则始终生效。</p>
+    <button class="btn btn-success" onclick="openSceneModal()"><i class="bi bi-plus-lg"></i> 新建场景</button>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead><tr>
+                    <th width="60">ID</th><th>场景名称</th><th>描述</th>
+                    <th width="80">规则数</th><th width="80">状态</th>
+                    <th width="150">创建时间</th><th width="180">操作</th>
+                </tr></thead>
+                <tbody id="scenesTableBody">
+                    <tr><td colspan="7" class="text-center text-muted py-4">加载中...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="sceneModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sceneModalTitle">新建场景</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="sceneId">
+                <div class="mb-3">
+                    <label class="form-label">场景名称 <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="sceneName" placeholder="如：正常流程">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">描述</label>
+                    <textarea class="form-control" id="sceneDescription" rows="3" placeholder="场景描述"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="saveScene()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/mock-admin/static/js/scenes.js"></script>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}设置 - HTTP Mock Server{% endblock %}
+{% block page_title %}设置{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-header"><i class="bi bi-share"></i> 转发配置</div>
+            <div class="card-body">
+                <div class="form-check form-switch mb-3">
+                    <input type="checkbox" class="form-check-input" id="proxyEnabled" {{ 'checked' if settings.proxy_enabled == 'true' else '' }}>
+                    <label class="form-check-label" for="proxyEnabled">启用无匹配转发 (HTTP 代理模式)</label>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">默认转发目标地址</label>
+                    <input type="text" class="form-control" id="proxyTarget" value="{{ settings.proxy_target }}" placeholder="http://192.168.1.100:8080">
+                    <small class="text-muted">未命中 Mock 规则时转发到此地址</small>
+                </div>
+                <div class="form-check form-switch mb-3">
+                    <input type="checkbox" class="form-check-input" id="proxyStripHeader" {{ 'checked' if settings.proxy_strip_mock_header == 'true' else '' }}>
+                    <label class="form-check-label" for="proxyStripHeader">转发时移除 Mock 相关 Header</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header"><i class="bi bi-exclamation-triangle"></i> 默认响应</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">未命中且未转发时的默认状态码</label>
+                    <input type="number" class="form-control" id="defaultResponseStatus" value="{{ settings.default_response_status }}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">默认响应 Header (JSON)</label>
+                    <textarea class="form-control font-monospace" id="defaultResponseHeaders" rows="3" style="font-size:13px;">{{ settings.default_response_headers }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">默认响应体</label>
+                    <textarea class="form-control font-monospace" id="defaultResponseBody" rows="4" style="font-size:13px;">{{ settings.default_response_body }}</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-header"><i class="bi bi-database"></i> 数据清理</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">请求记录保留天数</label>
+                    <input type="number" class="form-control" id="retentionDays" value="{{ settings.request_retention_days }}" min="1">
+                    <small class="text-muted">超过此天数的请求记录将自动清理</small>
+                </div>
+                <button class="btn btn-outline-danger" onclick="cleanupNow()"><i class="bi bi-trash"></i> 立即清理过期记录</button>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header"><i class="bi bi-globe"></i> 跨域设置</div>
+            <div class="card-body">
+                <div class="form-check form-switch">
+                    <input type="checkbox" class="form-check-input" id="corsEnabled" {{ 'checked' if settings.cors_enabled == 'true' else '' }}>
+                    <label class="form-check-label" for="corsEnabled">启用 CORS (允许跨域请求)</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><i class="bi bi-info-circle"></i> 服务信息</div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr><td>监听地址</td><td><code>{{ settings.get('host', '0.0.0.0') }}</code></td></tr>
+                    <tr><td>监听端口</td><td><code>{{ settings.get('port', '5000') }}</code></td></tr>
+                    <tr><td>查询 API</td><td><code>GET /api/requests/&#123;request_id&#125;</code></td></tr>
+                    <tr><td>管理后台</td><td><code>/mock-admin/</code></td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-end mt-3">
+    <button class="btn btn-primary" onclick="saveSettings()"><i class="bi bi-save"></i> 保存设置</button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/mock-admin/static/js/settings.js"></script>
+{% endblock %}

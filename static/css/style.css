@@ -1,0 +1,35 @@
+/* HTTP Mock Server Styles */
+:root { --primary: #1976d2; --sidebar-w: 220px; }
+body { font-size: 14px; background: #f5f7fa; }
+.sidebar { width: var(--sidebar-w); min-height: 100vh; position: fixed; left: 0; top: 0; z-index: 1000; display: flex; flex-direction: column; }
+.sidebar-header { padding: 20px 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.sidebar-header h5 { margin: 0; font-weight: 600; }
+.sidebar .nav-link { padding: 10px 20px; font-size: 14px; }
+.sidebar .nav-link:hover { background: rgba(255,255,255,0.1); }
+.sidebar .nav-link.active { background: rgba(255,255,255,0.15); font-weight: 600; }
+.sidebar .nav-link i { width: 20px; text-align: center; margin-right: 8px; }
+.sidebar-footer { margin-top: auto; padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.1); opacity: 0.6; }
+#wrapper { min-height: 100vh; }
+#page-content-wrapper { margin-left: var(--sidebar-w); min-width: 0; }
+.stat-card { border: none; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.stat-card:hover { transform: translateY(-2px); }
+.card { border: none; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.card-header { background: #fff; border-bottom: 1px solid #eee; font-weight: 600; padding: 12px 16px; }
+.table { margin-bottom: 0; font-size: 13px; }
+.table thead th { border-bottom: 2px solid #eee; font-weight: 600; color: #666; white-space: nowrap; }
+.table td { vertical-align: middle; }
+.badge { font-weight: 500; font-size: 11px; }
+.match-condition-row { background: #f8f9fa; padding: 8px; border-radius: 4px; margin-bottom: 8px; }
+.trend-bars { gap: 10px; }
+.trend-bar-wrapper { flex: 1; text-align: center; }
+.trend-bar { background: linear-gradient(180deg, #1976d2, #42a5f5); border-radius: 4px 4px 0 0; min-height: 5px; width: 100%; }
+.trend-bar:hover { background: linear-gradient(180deg, #1565c0, #1e88e5); }
+.trend-count { font-size: 12px; font-weight: 600; color: #333; margin-top: 4px; }
+.trend-date { font-size: 11px; color: #999; }
+.json-viewer { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 4px; padding: 12px; font-family: monospace; font-size: 12px; white-space: pre-wrap; word-break: break-all; max-height: 400px; overflow-y: auto; }
+.form-label { font-weight: 500; margin-bottom: 4px; }
+.form-control:focus, .form-select:focus { border-color: #1976d2; box-shadow: 0 0 0 0.2rem rgba(25,118,210,0.15); }
+.toast { min-width: 300px; }
+.pagination .page-link { color: #1976d2; }
+.pagination .page-item.active .page-link { background-color: #1976d2; border-color: #1976d2; }
+code { color: #e83e8c; background: #f8f9fa; padding: 1px 4px; border-radius: 3px; font-size: 12px; }

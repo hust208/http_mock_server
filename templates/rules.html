@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% block title %}规则管理 - HTTP Mock Server{% endblock %}
+{% block page_title %}规则管理{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-8">
+        <div class="d-flex gap-2">
+            <select class="form-select" id="filterScene" style="width: 200px;">
+                <option value="">全部场景</option>
+                {% for scene in scenes %}
+                <option value="{{ scene.id }}">{{ scene.name }}</option>
+                {% endfor %}
+            </select>
+            <button class="btn btn-primary" onclick="loadRules()"><i class="bi bi-arrow-clockwise"></i> 刷新</button>
+        </div>
+    </div>
+    <div class="col-md-4 text-end">
+        <button class="btn btn-outline-secondary btn-sm" onclick="batchAction('enable')"><i class="bi bi-check2-all"></i> 启用</button>
+        <button class="btn btn-outline-secondary btn-sm" onclick="batchAction('disable')"><i class="bi bi-circle"></i> 禁用</button>
+        <button class="btn btn-outline-danger btn-sm" onclick="batchAction('delete')"><i class="bi bi-trash"></i> 删除</button>
+        <button class="btn btn-success" onclick="openRuleModal()"><i class="bi bi-plus-lg"></i> 新增规则</button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th width="30"><input type="checkbox" class="form-check-input" id="selectAll" onchange="toggleSelectAll(this)"></th>
+                        <th width="60">启用</th>
+                        <th width="60">优先级</th>
+                        <th>名称</th>
+                        <th width="70">方法</th>
+                        <th>URL 匹配</th>
+                        <th width="80">匹配类型</th>
+                        <th>匹配条件</th>
+                        <th width="50">状态码</th>
+                        <th width="50">延迟</th>
+                        <th>场景</th>
+                        <th width="40">命中</th>
+                        <th width="110">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="rulesTableBody">
+                    <tr><td colspan="13" class="text-center text-muted py-4">加载中...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Rule Edit Modal -->
+<div class="modal fade" id="ruleModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ruleModalTitle">新增规则</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="ruleId">
+                <ul class="nav nav-tabs mb-3">
+                    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tabBasic">基本信息</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabMatch">匹配条件</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabResponse">响应配置</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabAdvanced">高级行为</a></li>
+                </ul>
+                <div class="tab-content">
+                    <!-- Basic Info Tab -->
+                    <div class="tab-pane fade show active" id="tabBasic">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">规则名称 <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="ruleName" placeholder="如：用户查询-正常响应">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">HTTP 方法 <span class="text-danger">*</span></label>
+                                <select class="form-select" id="ruleMethod">
+                                    <option value="GET">GET</option>
+                                    <option value="POST">POST</option>
+                                    <option value="PUT">PUT</option>
+                                    <option value="DELETE">DELETE</option>
+                                    <option value="PATCH">PATCH</option>
+                                    <option value="OPTIONS">OPTIONS</option>
+                                    <option value="HEAD">HEAD</option>
+                                    <option value="ANY">ANY (任意)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">优先级</label>
+                                <input type="number" class="form-control" id="rulePriority" value="100" min="0">
+                                <small class="text-muted">数字越小越优先</small>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label">URL 路径 <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="ruleUrl" placeholder="/api/users">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">URL 匹配方式</label>
+                                <select class="form-select" id="ruleUrlMatchType">
+                                    <option value="exact">精确匹配</option>
+                                    <option value="prefix">前缀匹配</option>
+                                    <option value="wildcard">通配符 (*匹配)</option>
+                                    <option value="regex">正则表达式</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">所属场景</label>
+                                <select class="form-select" id="ruleScene">
+                                    <option value="">全局 (所有场景生效)</option>
+                                    {% for scene in scenes %}
+                                    <option value="{{ scene.id }}">{{ scene.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">描述</label>
+                                <input type="text" class="form-control" id="ruleDescription" placeholder="规则描述">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Match Conditions Tab -->
+                    <div class="tab-pane fade" id="tabMatch">
+                        <p class="text-muted small">所有条件同时满足时规则才命中。Body 字段支持点号嵌套访问 (如 data.user.id)。</p>
+                        <div id="matchConditions"></div>
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addMatchCondition()"><i class="bi bi-plus"></i> 添加条件</button>
+                    </div>
+
+                    <!-- Response Config Tab -->
+                    <div class="tab-pane fade" id="tabResponse">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">HTTP 状态码</label>
+                                <input type="number" class="form-control" id="ruleResponseStatus" value="200">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">响应 Header (JSON)</label>
+                            <textarea class="form-control font-monospace" id="ruleResponseHeaders" rows="3" style="font-size: 13px;">{"Content-Type": "application/json"}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">响应体</label>
+                            <textarea class="form-control font-monospace" id="ruleResponseBody" rows="10" style="font-size: 13px;" placeholder='{"code": 200, "message": "success", "data": {}}'></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Behavior Tab -->
+                    <div class="tab-pane fade" id="tabAdvanced">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">延迟响应 (ms)</label>
+                                <input type="number" class="form-control" id="ruleDelayMs" value="0" min="0">
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check mt-4">
+                                    <input type="checkbox" class="form-check-input" id="ruleTimeout">
+                                    <label class="form-check-label" for="ruleTimeout">模拟超时 (不返回响应)</label>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="form-check mb-2">
+                            <input type="checkbox" class="form-check-input" id="ruleRandomException">
+                            <label class="form-check-label" for="ruleRandomException">启用随机异常</label>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">异常概率 (%)</label>
+                                <input type="number" class="form-control" id="ruleExceptionProbability" value="50" min="1" max="100">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">异常状态码</label>
+                                <input type="number" class="form-control" id="ruleExceptionStatus" value="500" min="100" max="599">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="saveRule()">保存规则</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/mock-admin/static/js/rules.js"></script>
+{% endblock %}

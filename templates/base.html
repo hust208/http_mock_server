@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HTTP Mock Server{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/mock-admin/static/css/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="d-flex" id="wrapper">
+    <!-- Sidebar -->
+    <div class="bg-primary text-white sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h5><i class="bi bi-diagram-3"></i> HTTP Mock</h5>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link text-white {% if active_page == 'dashboard' %}active{% endif %}"
+                   href="/mock-admin/"><i class="bi bi-speedometer2"></i> 仪表盘</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white {% if active_page == 'rules' %}active{% endif %}"
+                   href="/mock-admin/rules"><i class="bi bi-list-check"></i> 规则管理</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white {% if active_page == 'scenes' %}active{% endif %}"
+                   href="/mock-admin/scenes"><i class="bi bi-masks"></i> 场景管理</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white {% if active_page == 'requests' %}active{% endif %}"
+                   href="/mock-admin/requests"><i class="bi bi-inboxes"></i> 请求记录</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white {% if active_page == 'settings' %}active{% endif %}"
+                   href="/mock-admin/settings"><i class="bi bi-gear"></i> 设置</a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <small>v1.0 | Python 3.6 + Flask</small>
+        </div>
+    </div>
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper" class="flex-grow-1">
+        <!-- Top Nav -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+            <div class="container-fluid">
+                <button class="btn btn-link" id="menu-toggle"><i class="bi bi-list"></i></button>
+                <span class="navbar-brand mb-0 h5">{% block page_title %}{% endblock %}</span>
+                <div class="d-flex align-items-center ms-auto">
+                    <span class="text-muted me-3" id="active-scene-name">
+                        <i class="bi bi-masks"></i> 当前场景: <strong id="current-scene">--</strong>
+                    </span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container-fluid p-4">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+    <div id="toast" class="toast" role="alert">
+        <div class="toast-header">
+            <strong class="me-auto" id="toast-title">提示</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" id="toast-body"></div>
+    </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">确认操作</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="confirmModalBody">确定要执行此操作吗？</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="confirmModalOk">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/mock-admin/static/js/app.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
